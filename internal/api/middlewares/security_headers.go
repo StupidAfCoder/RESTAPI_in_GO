@@ -11,7 +11,7 @@ func Security_headers(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")                                         //Server the actual content type Trust the content type provided by the API
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload") //Only connect via HTTPS in the provided max age in seconds
 		w.Header().Set("Content-Security-Policy", "default-src 'self'")                             //Only load resources from the safe resources or same resources
-		w.Header().Set("Referred-Policy", "no-referrer")                                            //No referer information is sent
+		w.Header().Set("Referrer-Policy", "no-referrer")                                            //No referer information is sent
 		w.Header().Set("X-Powered-By", "Django")                                                    //You can throw the attacker by making them think you are using the Django framework for backend
 		w.Header().Set("Server", "")                                                                //Tells the browser what Software is being used in the server currently it is empty due to us using none of those
 		w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")                                 //defines a meta-policy that controls whether site resources can be accessed cross-origin by a document running in a web client

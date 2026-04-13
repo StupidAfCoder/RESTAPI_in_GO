@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -14,25 +13,26 @@ var allowedOrgins = []string{
 func Cors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		fmt.Println(origin)
-
-		if isOriginAllowed(origin) {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
-			http.Error(w, "Not allowed by the CORS", http.StatusForbidden)
+		if origin == "" {
+			// No Origin header = same-origin request, just pass through
+			next.ServeHTTP(w, r)
 			return
 		}
-
-		w.Header().Set("Acess-Control-Allow-Headers", "Content-Type, Authorization")   //What headers can be used in the request
-		w.Header().Set("Acess-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE") //What methods can be used in the request
-		w.Header().Set("Access-Control-Allow-Credentials", "true")                     //tells browsers whether the server allows credentials to be included in cross-origin HTTP requests.
-		w.Header().Set("Acess-Control-Expose-Headers", "Authorization")
+		if !isOriginAllowed(origin) {
+			http.Error(w, "Not allowed by CORS policy", http.StatusForbidden)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
 		w.Header().Set("Access-Control-Max-Age", "3600")
 
 		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
-
 		next.ServeHTTP(w, r)
 	})
 }

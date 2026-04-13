@@ -9,8 +9,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var db *sql.DB
+
 func ConnectDB() (*sql.DB, error) {
 	fmt.Println("Trying to connect MariaDB")
+	if db != nil {
+		return db, nil // reuse existing connection pool
+	}
 
 	err := godotenv.Load()
 	if err != nil {
@@ -24,8 +29,11 @@ func ConnectDB() (*sql.DB, error) {
 	host := os.Getenv("HOST")
 
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, db_port, db_name)
-	db, err := sql.Open("mysql", connectionString)
+	db, err = sql.Open("mysql", connectionString)
 	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil { // verify the connection actually works
 		return nil, err
 	}
 	fmt.Println("Successfully Connected To Database!")

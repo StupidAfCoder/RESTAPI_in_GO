@@ -50,7 +50,7 @@ func GetOneTeacherHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Contc1ent-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(teacher)
 }
 
@@ -69,7 +69,7 @@ func AddTeachersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "applicaton/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	response := struct {
 		Status string           `json:"status"`
